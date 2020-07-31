@@ -1,5 +1,6 @@
 import React from 'react';
 import CompareEqualObj from '../utils/Utils';
+import { SCORE_MSG, ERR_EMPTY_FILES, ERR_EXTENSION_BAD } from '../utils/Constans';
 
 // fileReader to get content files
 let fileReader;
@@ -14,21 +15,24 @@ class CompareForm extends React.Component {
     }
 
     handleSubmit(event) {
-        console.log(this.state.jsonOne);
         if (this.state.jsonOne && this.state.jsonTwo) {
             const score = CompareEqualObj(this.state.jsonOne, this.state.jsonTwo)? '1': '0';
-            alert("SCORE = "+ score);
+            alert(SCORE_MSG+ score);
         } else {
-            alert("Error: Please select two files with json extension.");
+            alert(ERR_EMPTY_FILES);
         }
-        
         event.preventDefault();
     }
 
     handleFileRead = e => {
-        this.setState({
-            [this.currenttarge]: JSON.parse(fileReader.result),
-        });
+        try {
+            this.setState({
+                [this.currenttarge]: JSON.parse(fileReader.result),
+            });            
+        } catch (error) {
+            document.getElementById("compare-form").reset();
+            alert(ERR_EXTENSION_BAD);
+        }        
     };
     
     handleFileChosen = e => {
@@ -40,7 +44,7 @@ class CompareForm extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit} style={this.styles}>
+            <form id="compare-form" onSubmit={this.handleSubmit} style={this.styles}>
                 <label className="custom-file-upload padding-5">
                     <input
                         name="jsonOne"
